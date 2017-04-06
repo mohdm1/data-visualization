@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>USGS Earthquake Location Map </title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+   
+	
+</head>
+  </head>
+  <body>
+    <h1>USGS EarthQuake Locations According to Daily Live Feed</h1>
+    
+    <div id="my-map-container" style='width: 1080px; height: 900px;'></div>
+	
+    <script type="text/javascript">
+
+      //
+      // RAW DATASET
+      // courtesy of USGS Earthquake Hazards Program
+      // geojson location: https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson
+      //
+      // INITIALIZE MAP
+      //
+
+      var mapContainerId = 'my-map-container'
+      var latLonCoords = [41.29771887088102, -72.92673110961914] // [LAT, LON]
+      var zoomLevel = 1
+
+      var map = L.map(mapContainerId)
+          .setView(latLonCoords, zoomLevel)
+
+      //
+      // ADD MAP TILES
+      //
+
+      var tileUrlTemplate = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png' // just use this. don't worry about what it means
+      var tileLayerOptions = {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'} // just keep this
+
+      L.tileLayer(tileUrlTemplate, tileLayerOptions)
+          .addTo(map);
+	  
+	  // Add topology layer to map
+	  var OpenTopoMap = L.tileLayer('http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+	maxZoom: 17,
+	attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+});
+OpenTopoMap.addTo(map);
+	
+     // Add .geojson data to map
+	  function addDataToMap(data, map){
+		var dataLayer = L.geoJson(data, {
+			onEachFeature: function(feature, layer){
+				var popupText = "Magnitude: " + feature.properties.mag
+					+ "<br>Location: " + feature.properties.place 
+					+ "<br><a href='" + feature.properties.url + "'<More info</a>";
+				layer.bindPopup(popupText);}
+			})
+	  dataLayer.addTo(map);
+	  }
+	  // get geojson data from earthquake.usgs.gov
+	  $.getJSON("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson", function(data){ addDataToMap(data, map); });
+	  
+	  $
+    </script>
+  </body>
+</html>

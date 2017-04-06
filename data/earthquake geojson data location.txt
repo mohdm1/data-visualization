@@ -1,0 +1,3 @@
+https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson
+
+The daily earthquake feed .geojson data set is being pulled directly from the usgs.gov site which updates every 5 minutes. 
